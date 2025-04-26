@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador Creativo de Colores</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            transition: all 0.5s ease;
+        }
+        
+        .section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            width: 100%;
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px 0 0 6px;
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+        }
+        
+        .search-button {
+            padding: 14px 24px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .search-button:hover {
+            background-color: #555;
+            transform: translateY(-2px);
+        }
+        
+        .hint {
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        
+        .color-display {
+            font-size: 28px;
+            margin: 20px 0;
+            text-transform: capitalize;
+            font-weight: bold;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .back-button {
+            margin: 25px 0;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #444;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 30px;
+        }
+        
+        .option-card {
+            background-color: #222;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-color: #444;
+        }
+        
+        .option-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .option-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .option-desc {
+            color: #bbb;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .action-button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .action-button:hover {
+            background-color: #444;
+        }
+        
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .color-shade {
+            flex: 1;
+            transition: all 0.3s;
+        }
+        
+        .color-shade:hover {
+            flex: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-container {
+                padding: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Primera sección: Selección de color -->
+    <div class="section" id="color-section">
+        <div class="search-container">
+            <h1 style="margin-bottom: 30px;">Explorador Creativo de Colores</h1>
+            <div class="search-box">
+                <input type="text" class="search-input" id="color-input" placeholder="Escribe un color (ej: rojo, azul, verde)...">
+                <button class="search-button" onclick="seleccionarColor()"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+            <div class="hint">Prueba con: rojo, azul, verde, amarillo, rosa, morado, naranja, turquesa, dorado</div>
+        </div>
+    </div>
+
+    <!-- Segunda sección: Búsqueda específica -->
+    <div class="section hidden" id="item-section">
+        <div class="search-container">
+            <div class="color-display">Explorando el color: <span id="color-text"></span></div>
+            <div class="search-box">
+                <input type="text" class="search-input" id="item-input" placeholder="¿Qué te interesa de este color? (ej: autos, moda, decoración)...">
+                <button class="search-button" onclick="mostrarOpciones()"><i class="fas fa-arrow-right"></i> Continuar</button>
+            </div>
+            <button class="back-button" onclick="volverAtras()"><i class="fas fa-arrow-left"></i> Elegir otro color</button>
+        </div>
+    </div>
+
+    <!-- Tercera sección: Opciones de exploración -->
+    <div class="section hidden" id="options-section">
+        <div class="search-container">
+            <div class="color-display">Opciones para: <span id="color-text-2"></span> <span id="item-text"></span></div>
+            
+            <div class="options-container">
+                <!-- Opción 1: Resultados directos -->
+                <div class="option-card" onclick="buscarEnPinterest('results')">
+                    <div class="option-icon"><i class="fas fa-images"></i></div>
+                    <div class="option-title">Resultados Directos</div>
+                    <div class="option-desc">Explora imágenes directamente relacionadas con tu búsqueda en Pinterest</div>
+                    <div class="color-palette" id="main-color-palette"></div>
+                    <button class="action-button">Ver resultados</button>
+                </div>
+                
+                <!-- Opción 2: Paleta de colores -->
+                <div class="option-card" onclick="buscarEnPinterest('palette')">
+                    <div class="option-icon"><i class="fas fa-palette"></i></div>
+                    <div class="option-title">Paleta de Colores</div>
+                    <div class="option-desc">Descubre variaciones y combinaciones armónicas de este color</div>
+                    <div class="color-palette" id="shades-palette"></div>
+                    <button class="action-button">Explorar paletas</button>
+                </div>
+                
+                <!-- Opción 3: Ideas para dibujar -->
+                <div class="option-card" onclick="buscarEnPinterest('art')">
+                    <div class="option-icon"><i class="fas fa-paint-brush"></i></div>
+                    <div class="option-title">Ideas Artísticas</div>
+                    <div class="option-desc">Inspiración para dibujar, pintar y crear con este color</div>
+                    <div class="color-palette" id="art-palette"></div>
+                    <button class="action-button">Buscar inspiración</button>
+                </div>
+            </div>
+            
+            <button class="back-button" onclick="volverABusqueda()"><i class="fas fa-arrow-left"></i> Cambiar búsqueda</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let colorSeleccionado = '';
+        let itemSeleccionado = '';
+        
+        // Lista de colores válidos con sus variaciones
+        const coloresData = {
+            'rojo': { en: 'red', shades: ['#ff0000', '#cc0000', '#990000', '#ff6666', '#ff9999'] },
+            'azul': { en: 'blue', shades: ['#0000ff', '#0000cc', '#000099', '#6666ff', '#9999ff'] },
+            'verde': { en: 'green', shades: ['#00ff00', '#00cc00', '#009900', '#66ff66', '#99ff99'] },
+            'amarillo': { en: 'yellow', shades: ['#ffff00', '#cccc00', '#999900', '#ffff66', '#ffff99'] },
+            'rosa': { en: 'pink', shades: ['#ffc0cb', '#ff69b4', '#ff1493', '#ffb6c1', '#ffd3e6'] },
+            'morado': { en: 'purple', shades: ['#800080', '#660066', '#4d004d', '#b366b3', '#cc99cc'] },
+            'violeta': { en: 'violet', shades: ['#ee82ee', '#d670d6', '#be5ebe', '#f4b4f4', '#f9d6f9'] },
+            'naranja': { en: 'orange', shades: ['#ffa500', '#cc8400', '#996300', '#ffc266', '#ffd699'] },
+            'negro': { en: 'black', shades: ['#000000', '#333333', '#666666', '#999999', '#cccccc'] },
+            'blanco': { en: 'white', shades: ['#ffffff', '#f2f2f2', '#e6e6e6', '#d9d9d9', '#cccccc'] },
+            'turquesa': { en: 'turquoise', shades: ['#40e0d0', '#33b3a6', '#26867c', '#79e9dd', '#a3f0e8'] },
+            'celeste': { en: 'light blue', shades: ['#87ceeb', '#6ca5bc', '#517b8d', '#abd7f0', '#c7e4f5'] },
+            'dorado': { en: 'gold', shades: ['#ffd700', '#ccac00', '#998100', '#ffe566', '#fff099'] },
+            'plateado': { en: 'silver', shades: ['#c0c0c0', '#9a9a9a', '#747474', '#d6d6d6', '#e8e8e8'] },
+            'gris': { en: 'gray', shades: ['#808080', '#666666', '#4d4d4d', '#b3b3b3', '#cccccc'] },
+            'marron': { en: 'brown', shades: ['#a52a2a', '#842222', '#631919', '#c57f7f', '#d8a5a5'] },
+            'beige': { en: 'beige', shades: ['#f5f5dc', '#c4c4b3', '#93938a', '#f8f8e6', '#fbfbf0'] },
+            'ocre': { en: 'ochre', shades: ['#cc7722', '#a35f1b', '#7a4714', '#d99d5c', '#e6bd8f'] },
+            'coral': { en: 'coral', shades: ['#ff7f50', '#cc6540', '#994c30', '#ffa583', '#ffc2a8'] },
+            'magenta': { en: 'magenta', shades: ['#ff00ff', '#cc00cc', '#990099', '#ff66ff', '#ff99ff'] }
+        };
+
+        // Función para seleccionar el color
+        function seleccionarColor() {
+            const input = document.getElementById('color-input');
+            const color = input.value.toLowerCase().trim();
+            
+            if (coloresData[color]) {
+                colorSeleccionado = color;
+                
+                // Mostrar la segunda sección
+                document.getElementById('color-section').classList.add('hidden');
+                document.getElementById('item-section').classList.remove('hidden');
+                
+                // Mostrar el color seleccionado
+                const colorElement = document.getElementById('color-text');
+                colorElement.textContent = color;
+                colorElement.style.color = coloresData[color].shades[0];
+                
+                // Enfocar el input de búsqueda
+                document.getElementById('item-input').focus();
+            } else {
+                alert('Color no reconocido. Prueba con: ' + Object.keys(coloresData).slice(0, 7).join(', ') + ', etc.');
+                input.focus();
+            }
+        }
+
+        // Función para mostrar las opciones
+        function mostrarOpciones() {
+            const itemInput = document.getElementById('item-input');
+            itemSeleccionado = itemInput.value.trim();
+            
+            if (itemSeleccionado) {
+                // Mostrar la tercera sección
+                document.getElementById('item-section').classList.add('hidden');
+                document.getElementById('options-section').classList.remove('hidden');
+                
+                // Actualizar textos
+                document.getElementById('color-text-2').textContent = colorSeleccionado;
+                document.getElementById('color-text-2').style.color = coloresData[colorSeleccionado].shades[0];
+                document.getElementById('item-text').textContent = itemSeleccionado;
+                
+                // Generar paletas de colores
+                generarPaletas();
+            } else {
+                alert('Por favor, escribe qué te interesa de este color');
+                itemInput.focus();
+            }
+        }
+
+        // Función para generar las paletas de colores visuales
+        function generarPaletas() {
+            const shades = coloresData[colorSeleccionado].shades;
+            
+            // Paleta principal
+            let mainPaletteHTML = '';
+            shades.forEach(shade => {
+                mainPaletteHTML += `<div class="color-shade" style="background-color: ${shade};"></div>`;
+            });
+            document.getElementById('main-color-palette').innerHTML = mainPaletteHTML;
+            
+            // Paleta de sombras (variaciones)
+            let shadesPaletteHTML = '';
+            const shadeVariations = generarVariaciones(shades[0]);
+            shadeVariations.forEach(shade => {
+                shadesPaletteHTML += `<div class="color-shade" style="background-color: ${shade};"></div>`;
+            });
+            document.getElementById('shades-palette').innerHTML = shadesPaletteHTML;
+            
+            // Paleta artística (combinaciones)
+            let artPaletteHTML = '';
+            const artCombinations = generarCombinaciones(shades[0]);
+            artCombinations.forEach(color => {
+                artPaletteHTML += `<div class="color-shade" style="background-color: ${color};"></div>`;
+            });
+            document.getElementById('art-palette').innerHTML = artPaletteHTML;
+        }
+
+        // Función para generar variaciones de un color
+        function generarVariaciones(baseColor) {
+            // Esto es una simplificación - en una app real podrías usar una librería de color
+            const variations = [];
+            for (let i = 0; i < 5; i++) {
+                variations.push(ajustarBrillo(baseColor, (i-2)*0.2));
+            }
+            return variations;
+        }
+
+        // Función para generar combinaciones armónicas
+        function generarCombinaciones(baseColor) {
+            // Simplificación - combinaciones básicas
+            return [
+                baseColor,
+                ajustarBrillo(baseColor, 0.3),
+                ajustarBrillo(baseColor, -0.3),
+                ajustarHue(baseColor, 30),
+                ajustarHue(baseColor, -30)
+            ];
+        }
+
+        // Función auxiliar para ajustar brillo (simplificada)
+        function ajustarBrillo(hex, factor) {
+            // Implementación básica - en producción usa una librería de color
+            return hex; // Esto debería modificarse para ajustar realmente el color
+        }
+
+        // Función auxiliar para ajustar tono (simplificada)
+        function ajustarHue(hex, degrees) {
+            // Implementación básica - en producción usa una librería de color
+            return hex; // Esto debería modificarse para ajustar realmente el color
+        }
+
+        // Función para buscar en Pinterest según la opción
+        function buscarEnPinterest(tipo) {
+            let query = '';
+            
+            switch(tipo) {
+                case 'results':
+                    query = `${coloresData[colorSeleccionado].en} ${itemSeleccionado}`;
+                    break;
+                case 'palette':
+                    query = `${coloresData[colorSeleccionado].en} color palette`;
+                    break;
+                case 'art':
+                    query = `${coloresData[colorSeleccionado].en} art ideas drawing painting`;
+                    break;
+            }
+            
+            const url = `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(query)}`;
+            window.open(url, '_blank');
+        }
+
+        // Función para volver atrás
+        function volverAtras() {
+            document.getElementById('item-section').classList.add('hidden');
+            document.getElementById('color-section').classList.remove('hidden');
+            document.getElementById('color-input').focus();
+        }
+        
+        function volverABusqueda() {
+            document.getElementById('options-section').classList.add('hidden');
+            document.getElementById('item-section').classList.remove('hidden');
+            document.getElementById('item-input').focus();
+        }
+
+        // Permitir buscar al presionar Enter
+        document.getElementById('color-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                seleccionarColor();
+            }
+        });
+
+        document.getElementById('item-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                mostrarOpciones();
+            }
+        });
+    </script>
+</body>
+</html>
